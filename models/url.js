@@ -18,6 +18,6 @@ const urlSchema = new mongoose.Schema({
 
 );
 
-const URL = mongoose.model("url" , userSchema);
+const URL = mongoose.model("url" ,urlSchema);
 
 module.exports = URL; //export just an variable const URL 
