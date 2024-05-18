@@ -3,11 +3,14 @@ const path = require("path"); //just this dont't need to install this already bu
 const app = express();
 const mongoose = require("mongoose");
 const urlRoute = require("./routes/url");
+const staticRoute = require("./routes/staticRouter");
 const { connectToMongoDB } = require("./connect");
 const URL = require("./models/url");
 
 
-const port = 8002;
+
+
+const port = 8003;
 //connection for mongodb
 
 connectToMongoDB("mongodb://127.0.0.1:27017/short-url").then(() => console.log("mongodb is connected"));
@@ -15,25 +18,27 @@ connectToMongoDB("mongodb://127.0.0.1:27017/short-url").then(() => console.log("
 app.set("view enginee" , "ejs");
 app.set("views" , path.resolve("./views"));
 
-
-
-
-
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: false}));
 
 app.use("/test" ,async (req , res) =>{
     const allUrls = await URL.find({});
-   return res.render('home');
+   return res.render("home.ejs" , {
+        urls: allUrls,
+
+
+   });
 });
 
-
 app.use("/url" , urlRoute);
+
+app.use("/" , staticRoute ); 
+
 
 app.get("/url/:shortId" ,async (req , res) => {
     const shortId = req.params.shortId;
    const entry = await URL.findOneAndUpdate({
-        shortId
+        shortId,
     }, {
         $push: {
         vistHistory:{

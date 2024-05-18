@@ -12,7 +12,11 @@ async function handleGenerateNewShortURL(req ,res){
         visitHistory: [],
 
     });
- return res.json({id:shortID });
+ 
+     return res.render("home.ejs" , {
+        id:shortID 
+     });
+    //return res.json({id:shortID });
 }
 
 module.exports = {
