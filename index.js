@@ -6,9 +6,9 @@ const urlRoute = require("./routes/url");
 const staticRoute = require("./routes/staticRouter");
 const { connectToMongoDB } = require("./connect");
 const URL = require("./models/url");
-
-
-
+const userRoute = require("./routes/user");
+const  cookieParser = require("cookie-parser");
+const { restrictToLoggedinUserOnly , checkAuth } = require("./middlewares/auth");
 
 const port = 8003;
 //connection for mongodb
@@ -20,6 +20,8 @@ app.set("views" , path.resolve("./views"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
+app.use(cookieParser());
+
 
 app.use("/test" ,async (req , res) =>{
     const allUrls = await URL.find({});
@@ -30,9 +32,9 @@ app.use("/test" ,async (req , res) =>{
    });
 });
 
-app.use("/url" , urlRoute);
-
-app.use("/" , staticRoute ); 
+app.use("/url" , restrictToLoggedinUserOnly, urlRoute);
+app.use("/user", userRoute);
+app.use("/" , checkAuth , staticRoute ); 
 
 
 app.get("/url/:shortId" ,async (req , res) => {
