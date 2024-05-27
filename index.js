@@ -8,7 +8,7 @@ const { connectToMongoDB } = require("./connect");
 const URL = require("./models/url");
 const userRoute = require("./routes/user");
 const  cookieParser = require("cookie-parser");
-const { restrictToLoggedinUserOnly , checkAuth } = require("./middlewares/auth");
+const { restrictTo, checkForAuthentication} = require("./middlewares/auth");
 
 const port = 8003;
 //connection for mongodb
@@ -21,20 +21,21 @@ app.set("views" , path.resolve("./views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 app.use(cookieParser());
+app.use(checkForAuthentication);
 
 
-app.use("/test" ,async (req , res) =>{
-    const allUrls = await URL.find({});
-   return res.render("home.ejs" , {
-        urls: allUrls,
+// app.use("/test" ,async (req , res) =>{
+//     const allUrls = await URL.find({});
+//    return res.render("home.ejs" , {
+//         urls: allUrls,
 
 
-   });
-});
+//    });
+// });
 
-app.use("/url" , restrictToLoggedinUserOnly, urlRoute);
+app.use("/url" , restrictTo("NORMAL" , "ADMIN"), urlRoute);
 app.use("/user", userRoute);
-app.use("/" , checkAuth , staticRoute ); 
+app.use("/" , staticRoute ); 
 
 
 app.get("/url/:shortId" ,async (req , res) => {
@@ -50,6 +51,6 @@ app.get("/url/:shortId" ,async (req , res) => {
     },
 });
    res.redirect(entry.redirectURL);
-});
+}); 
 
 app.listen(port , () => console.log(`Server is Started at port ${port}`));

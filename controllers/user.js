@@ -23,13 +23,14 @@ async function handleUserLogin(req , res) {
 
         error : "Invalid Username and password",
 });
+
     
-    const sessionId = uuidv4();
+   // const sessionId = uuidv4();
    // console.log(sessionId);
    const token = setUser(user);
-   //res.cookie("uid" , token);
-  //  return res.redirect("/");
-  return res.json({ token });
+   res.cookie("token" , token);
+  return res.redirect("/");
+ // return res.json({ token });
 }
 
 module.exports = {
